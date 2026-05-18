@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Painting {
+  id            String         @id @default(cuid())
+  title         String
+  slug          String         @unique
+  description   String
+  priceBani     Int
+  imageUrl      String
+  imageKey      String
+  widthCm       Float
+  heightCm      Float
+  year          Int
+  medium        String
+  status        PaintingStatus @default(AVAILABLE)
+  dominantColor String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  orders        Order[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum PaintingStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  paintingId            String
+  painting              Painting    @relation(fields: [paintingId], references: [id])
+  stripeSessionId       String      @unique
+  stripePaymentIntentId String?
+  status                OrderStatus @default(PENDING)
+  customerEmail         String
+  customerName          String
+  amountPaidBani        Int
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  @@index([status])
+  @@index([customerEmail])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+}

@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
+@theme {
+  /* Dark museum palette */
+  --color-canvas: #13100C;
+  --color-ink: #EDE8DE;
+  --color-accent: #C05050;
+  --color-accent-light: #D06060;
+  --color-terra: #C4724B;
+  --color-muted: #7A6B55;
+  --color-surface: #1E1812;
+
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #13100C;
+  --foreground: #EDE8DE;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
