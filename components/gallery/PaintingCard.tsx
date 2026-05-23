@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/Badge'
 import { formatPrice } from '@/lib/color'
 import { PaintingFrame } from './PaintingFrame'
+import { AddToCartButton } from './AddToCartButton'
 import type { Painting } from '@/types'
 
 export function PaintingCard({ painting }: { painting: Painting }) {
@@ -21,7 +22,10 @@ export function PaintingCard({ painting }: { painting: Painting }) {
 
       <Link href={`/paintings/${painting.slug}`} className="relative block z-10">
         <PaintingFrame>
-          <div className="relative aspect-[3/4] overflow-hidden">
+          <div
+            className="relative overflow-hidden"
+            style={{ aspectRatio: `${painting.widthCm} / ${painting.heightCm}` }}
+          >
             <Image
               src={painting.imageUrl}
               alt={painting.title}
@@ -40,9 +44,19 @@ export function PaintingCard({ painting }: { painting: Painting }) {
                 {painting.year} · {painting.medium}
               </span>
               <Badge status={painting.status} />
-              <span className="mt-2 text-xs text-white/70 border border-white/25 px-4 py-1.5 rounded-sm tracking-widest uppercase">
+              <span className="text-xs text-white/70 border border-white/25 px-4 py-1.5 rounded-sm tracking-widest uppercase">
                 Vezi detalii
               </span>
+              <AddToCartButton
+                painting={painting}
+                className="text-xs px-4 py-1.5 rounded-sm tracking-widest uppercase font-medium transition-colors"
+                style={{
+                  background: 'var(--color-accent)',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              />
             </div>
           </div>
         </PaintingFrame>

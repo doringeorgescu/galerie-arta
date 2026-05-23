@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { MuseumLighting } from '@/components/gallery/MuseumLighting'
 import { PaintingFrame } from '@/components/gallery/PaintingFrame'
 import { BuyNowButton } from '@/components/checkout/BuyNowButton'
+import { AddToCartButton } from '@/components/gallery/AddToCartButton'
 import { Badge } from '@/components/ui/Badge'
 import { formatPrice } from '@/lib/color'
 
@@ -37,7 +38,7 @@ export default async function PaintingDetailPage({ params }: Props) {
               src={painting.imageUrl}
               alt={painting.title}
               width={600}
-              height={800}
+              height={Math.round(600 * painting.heightCm / painting.widthCm)}
               className="w-full h-auto block"
               priority
             />
@@ -72,7 +73,16 @@ export default async function PaintingDetailPage({ params }: Props) {
 
           <p className="text-ink/80 leading-relaxed">{painting.description}</p>
 
-          {painting.status === 'AVAILABLE' && <BuyNowButton paintingId={painting.id} />}
+          {painting.status === 'AVAILABLE' && (
+            <div className="flex flex-col sm:flex-row gap-3">
+              <AddToCartButton
+                painting={painting}
+                className="flex-1 py-4 px-8 text-base tracking-widest uppercase font-medium transition-colors rounded-sm"
+                style={{ background: 'var(--color-accent)', color: '#fff', border: 'none', cursor: 'pointer' }}
+              />
+              <BuyNowButton paintingId={painting.id} />
+            </div>
+          )}
 
           {painting.status === 'RESERVED' && (
             <p className="text-sm text-muted italic">

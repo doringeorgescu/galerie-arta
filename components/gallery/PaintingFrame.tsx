@@ -11,7 +11,7 @@ export function PaintingFrame({ children }: { children: React.ReactNode }) {
     >
       <div
         style={{
-          padding: '8px',
+          padding: '6px',
           background: '#1A1410',
           boxShadow: 'inset 0 2px 14px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(0,0,0,0.6)',
         }}
