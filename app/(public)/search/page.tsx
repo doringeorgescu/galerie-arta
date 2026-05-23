@@ -43,7 +43,7 @@ export default async function SearchPage({ searchParams }: Props) {
             {q.trim() ? (
               <>
                 {' '}pentru{' '}
-                <span style={{ color: 'var(--color-ink)', fontWeight: 500 }}>„{q.trim()}"</span>
+                <span style={{ color: 'var(--color-ink)', fontWeight: 500 }}>&bdquo;{q.trim()}&rdquo;</span>
               </>
             ) : null}
           </p>
