@@ -2,11 +2,28 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const isAdminPath = request.nextUrl.pathname.startsWith('/admin')
+  const isLoginPath = request.nextUrl.pathname === '/admin/login'
+
+  // Use private vars (no NEXT_PUBLIC_ prefix) so they're read at runtime,
+  // not inlined as empty strings during local prebuilt compilation.
+  const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (isAdminPath && !isLoginPath) {
+      const loginUrl = request.nextUrl.clone()
+      loginUrl.pathname = '/admin/login'
+      return NextResponse.redirect(loginUrl)
+    }
+    return NextResponse.next()
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -29,9 +46,6 @@ export async function middleware(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-
-  const isAdminPath = request.nextUrl.pathname.startsWith('/admin')
-  const isLoginPath = request.nextUrl.pathname === '/admin/login'
 
   if (isAdminPath && !isLoginPath && !user) {
     const loginUrl = request.nextUrl.clone()

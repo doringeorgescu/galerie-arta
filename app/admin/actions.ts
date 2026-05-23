@@ -106,6 +106,12 @@ export async function deletePainting(id: string) {
   redirect('/admin/paintings')
 }
 
+export async function updateOrderStatus(id: string, status: 'PENDING' | 'PAID' | 'SHIPPED') {
+  await requireAdmin()
+  await prisma.order.update({ where: { id }, data: { status } })
+  revalidatePath('/admin/orders')
+}
+
 export async function signOut() {
   const supabase = await createClient()
   await supabase.auth.signOut()
