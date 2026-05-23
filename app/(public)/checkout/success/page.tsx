@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 export default async function CheckoutSuccessPage({
   searchParams,
 }: {

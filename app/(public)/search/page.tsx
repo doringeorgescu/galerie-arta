@@ -3,6 +3,8 @@ import { GalleryGrid } from '@/components/gallery/GalleryGrid'
 import { SearchInput } from '@/components/gallery/SearchInput'
 import type { PaintingStatus } from '@/types'
 
+export const dynamic = 'force-dynamic'
+
 type Props = { searchParams: Promise<{ q?: string; status?: string }> }
 
 export default async function SearchPage({ searchParams }: Props) {
