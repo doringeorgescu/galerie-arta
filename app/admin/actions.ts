@@ -18,6 +18,14 @@ export async function uploadImage(formData: FormData) {
   const file = formData.get('file') as File
   if (!file || file.size === 0) throw new Error('No file provided')
 
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    throw new Error('Tipul fișierului nu este permis. Folosește JPG, PNG, WEBP sau GIF.')
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    throw new Error('Fișierul este prea mare (maxim 10MB).')
+  }
+
   const supabase = createServiceClient()
   const ext = file.name.split('.').pop() ?? 'jpg'
   const key = `paintings/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`

@@ -20,19 +20,28 @@ export async function POST(req: NextRequest) {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
-    const paintingId = session.metadata?.paintingId
 
-    if (paintingId) {
+    // Single painting checkout stores `paintingId`; cart checkout stores `paintingIds` (comma-separated)
+    const singleId = session.metadata?.paintingId
+    const multiIds = session.metadata?.paintingIds?.split(',').filter(Boolean) ?? []
+    const paintingIds = singleId ? [singleId] : multiIds
+
+    if (paintingIds.length > 0) {
       try {
-        await prisma.$transaction([
-          prisma.painting.update({
-            where: { id: paintingId },
-            data: { status: 'SOLD' },
-          }),
-          prisma.order.create({
+        await prisma.$transaction(
+          paintingIds.map(id =>
+            prisma.painting.update({ where: { id }, data: { status: 'SOLD' } })
+          )
+        )
+
+        for (const paintingId of paintingIds) {
+          await prisma.order.create({
             data: {
               paintingId,
-              stripeSessionId: session.id,
+              // For cart sessions, append paintingId to keep stripeSessionId unique per row
+              stripeSessionId: paintingIds.length > 1
+                ? `${session.id}-${paintingId}`
+                : session.id,
               stripePaymentIntentId: typeof session.payment_intent === 'string'
                 ? session.payment_intent
                 : null,
@@ -41,10 +50,10 @@ export async function POST(req: NextRequest) {
               customerName: session.customer_details?.name ?? '',
               amountPaidBani: session.amount_total ?? 0,
             },
-          }),
-        ])
+          })
+        }
       } catch (err: unknown) {
-        // Duplicate webhook (idempotency) — P2002 = unique constraint violation
+        // Duplicate webhook (idempotency) — P2002 = unique constraint violation on stripeSessionId
         if ((err as { code?: string }).code === 'P2002') {
           return NextResponse.json({ received: true })
         }

@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       },
     ],
-    metadata: { paintingIds: painting.id },
+    metadata: { paintingId: painting.id },
     success_url: `${baseUrl()}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${baseUrl()}/paintings/${painting.slug}`,
   })
@@ -109,6 +109,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     console.error('[checkout] FULL ERROR:', msg)
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return NextResponse.json({ error: 'Eroare la procesarea plății. Încearcă din nou.' }, { status: 500 })
   }
 }
