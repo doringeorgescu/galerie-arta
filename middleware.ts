@@ -47,7 +47,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (isAdminPath && !isLoginPath && !user) {
+  // Server action POSTs must not be redirected — they carry their own
+  // requireAdmin() check and expect a JSON response, not an HTML redirect.
+  const isServerAction = request.method === 'POST' && !!request.headers.get('next-action')
+
+  if (isAdminPath && !isLoginPath && !user && !isServerAction) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/admin/login'
     return NextResponse.redirect(loginUrl)
@@ -64,7 +68,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on all paths except static assets and Next.js internals
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Skip static assets, Next.js internals, and API routes (they handle their own auth)
+    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

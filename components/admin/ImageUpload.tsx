@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { uploadImage } from '@/app/admin/actions'
 
 function checkHeic(file: File): boolean {
   const ext = file.name.split('.').pop()?.toLowerCase()
@@ -53,13 +52,27 @@ export function ImageUpload({ currentUrl, onUpload }: Props) {
       const file = raw
       setPreview(blobUrl)
 
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const [{ url, key }, dominantHex] = await Promise.all([
-        uploadImage(formData),
+      // Get signed URL + extract dominant color in parallel
+      const [urlJson, dominantHex] = await Promise.all([
+        fetch('/api/admin/upload-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: file.name, contentType: file.type }),
+        }).then(r => r.json()) as Promise<{ signedUrl: string; key: string; publicUrl: string; contentType: string; error?: string }>,
         extractDominantColor(blobUrl),
       ])
+
+      if (urlJson.error) throw new Error(urlJson.error)
+
+      // Upload directly to Supabase — bypasses Vercel payload limit
+      const uploadRes = await fetch(urlJson.signedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': urlJson.contentType },
+        body: file,
+      })
+      if (!uploadRes.ok) throw new Error(`Upload failed (${uploadRes.status})`)
+
+      const { publicUrl: url, key } = urlJson
 
       setColorSwatch(dominantHex)
       onUpload(url, key, dominantHex)

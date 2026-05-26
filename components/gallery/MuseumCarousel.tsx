@@ -269,6 +269,8 @@ export function MuseumCarousel({ paintings }: { paintings: Painting[] }) {
                           sizes="400px"
                         />
                         <SpotlightOverlay active={isActive} />
+                        {/* covers white paper/canvas margins with the mat colour */}
+                        <div aria-hidden style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 0 10px #1A1410', pointerEvents: 'none' }} />
                       </div>
                     </PaintingFrame>
                   </Link>

@@ -12,39 +12,14 @@ async function requireAdmin() {
   return user
 }
 
-export async function uploadImage(formData: FormData) {
-  await requireAdmin()
-
-  const file = formData.get('file') as File
-  if (!file || file.size === 0) throw new Error('No file provided')
-
-  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    throw new Error('Tipul fișierului nu este permis. Folosește JPG, PNG, WEBP sau GIF.')
-  }
-  if (file.size > 10 * 1024 * 1024) {
-    throw new Error('Fișierul este prea mare (maxim 10MB).')
-  }
-
-  const supabase = createServiceClient()
-  const ext = file.name.split('.').pop() ?? 'jpg'
-  const key = `paintings/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-
-  const { error } = await supabase.storage
-    .from('picturi')
-    .upload(key, file, { contentType: file.type })
-
-  if (error) throw new Error(error.message)
-
-  const { data } = supabase.storage.from('picturi').getPublicUrl(key)
-  return { url: data.publicUrl, key }
-}
 
 export async function createPainting(formData: FormData) {
   await requireAdmin()
 
   const imageUrl = formData.get('imageUrl') as string
   if (!imageUrl) throw new Error('Imaginea este obligatorie')
+
+  const extraImages = JSON.parse((formData.get('extraImages') as string) || '[]')
 
   await prisma.painting.create({
     data: {
@@ -60,6 +35,7 @@ export async function createPainting(formData: FormData) {
       medium: formData.get('medium') as string,
       dominantColor: (formData.get('dominantColor') as string) || null,
       status: (formData.get('status') as 'AVAILABLE' | 'RESERVED' | 'SOLD') ?? 'AVAILABLE',
+      extraImages,
     },
   })
 
@@ -70,6 +46,8 @@ export async function createPainting(formData: FormData) {
 
 export async function updatePainting(id: string, formData: FormData) {
   await requireAdmin()
+
+  const extraImages = JSON.parse((formData.get('extraImages') as string) || '[]')
 
   await prisma.painting.update({
     where: { id },
@@ -86,6 +64,7 @@ export async function updatePainting(id: string, formData: FormData) {
       medium: formData.get('medium') as string,
       dominantColor: (formData.get('dominantColor') as string) || null,
       status: formData.get('status') as 'AVAILABLE' | 'RESERVED' | 'SOLD',
+      extraImages,
     },
   })
 
@@ -99,12 +78,23 @@ export async function deletePainting(id: string) {
 
   const painting = await prisma.painting.findUnique({
     where: { id },
-    select: { imageKey: true },
+    select: { imageKey: true, extraImages: true },
   })
 
-  if (painting?.imageKey && !painting.imageKey.startsWith('seed/')) {
-    const supabase = createServiceClient()
-    await supabase.storage.from('picturi').remove([painting.imageKey])
+  if (painting) {
+    const keysToDelete: string[] = []
+    if (painting.imageKey && !painting.imageKey.startsWith('seed/')) {
+      keysToDelete.push(painting.imageKey)
+    }
+    if (Array.isArray(painting.extraImages)) {
+      for (const img of painting.extraImages as Array<{ key: string }>) {
+        if (img.key && !img.key.startsWith('seed/')) keysToDelete.push(img.key)
+      }
+    }
+    if (keysToDelete.length > 0) {
+      const supabase = createServiceClient()
+      await supabase.storage.from('picturi').remove(keysToDelete)
+    }
   }
 
   await prisma.painting.delete({ where: { id } })

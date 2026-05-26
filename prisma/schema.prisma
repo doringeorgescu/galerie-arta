@@ -20,6 +20,7 @@ model Painting {
   medium        String
   status        PaintingStatus @default(AVAILABLE)
   dominantColor String?
+  extraImages   Json           @default("[]")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   orders        Order[]
