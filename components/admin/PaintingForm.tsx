@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createPainting, updatePainting } from '@/app/admin/actions'
+import { createPainting, updatePainting } from '@/app/studio/actions'
 import { ImageUpload } from './ImageUpload'
 import { Button } from '@/components/ui/Button'
 import type { Painting } from '@/types'

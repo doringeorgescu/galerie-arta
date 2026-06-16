@@ -265,7 +265,7 @@ export function MuseumCarousel({ paintings }: { paintings: Painting[] }) {
                           alt={painting.title}
                           fill
                           className="object-cover"
-                          priority={isActive || i === 0}
+                          priority={i === 0}
                           sizes="400px"
                         />
                         <SpotlightOverlay active={isActive} />

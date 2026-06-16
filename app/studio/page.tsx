@@ -30,7 +30,7 @@ export default async function AdminPage() {
       </div>
 
       <Link
-        href="/admin/paintings/new"
+        href="/studio/paintings/new"
         className="inline-flex items-center gap-2 bg-accent text-canvas rounded px-5 py-2.5 text-sm font-medium hover:bg-accent-light transition-colors"
       >
         + Lucrare nouă

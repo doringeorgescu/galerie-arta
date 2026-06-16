@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
-import { signOut } from '@/app/admin/actions'
+import { signOut } from '@/app/studio/actions'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -16,17 +16,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="border-b border-muted/20 bg-surface/60 sticky top-0 z-40 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
           <nav className="flex items-center gap-6">
-            <Link href="/admin" className="font-serif text-ink text-lg">
+            <Link href="/studio" className="font-serif text-ink text-lg">
               Admin
             </Link>
             <Link
-              href="/admin/paintings"
+              href="/studio/paintings"
               className="text-sm text-muted hover:text-ink transition-colors"
             >
               Tablouri
             </Link>
             <Link
-              href="/admin/orders"
+              href="/studio/orders"
               className="text-sm text-muted hover:text-ink transition-colors"
             >
               Comenzi

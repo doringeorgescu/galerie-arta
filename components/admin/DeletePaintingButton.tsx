@@ -1,6 +1,6 @@
 'use client'
 
-import { deletePainting } from '@/app/admin/actions'
+import { deletePainting } from '@/app/studio/actions'
 
 export function DeletePaintingButton({ id }: { id: string }) {
   return (

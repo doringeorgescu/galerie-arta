@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { MuseumCarousel } from '@/components/gallery/MuseumCarousel'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export default async function GalleryPage() {
   const paintings = await prisma.painting.findMany({

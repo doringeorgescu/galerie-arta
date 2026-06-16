@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
-import { updateOrderStatus } from '@/app/admin/actions'
+import { updateOrderStatus } from '@/app/studio/actions'
 
 type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPED'
 

@@ -1,7 +1,12 @@
+import { cache } from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+
+const getPainting = cache((slug: string) =>
+  prisma.painting.findUnique({ where: { slug } })
+)
 import { PaintingGallery } from '@/components/gallery/PaintingGallery'
 import { BuyNowButton } from '@/components/checkout/BuyNowButton'
 import { AddToCartButton } from '@/components/gallery/AddToCartButton'
@@ -22,7 +27,7 @@ function parseExtraImages(raw: unknown): ExtraImage[] {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const painting = await prisma.painting.findUnique({ where: { slug } })
+  const painting = await getPainting(slug)
   if (!painting) return {}
   return {
     title: painting.title,
@@ -33,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PaintingDetailPage({ params }: Props) {
   const { slug } = await params
-  const painting = await prisma.painting.findUnique({ where: { slug } })
+  const painting = await getPainting(slug)
 
   if (!painting || painting.status === 'SOLD') notFound()
 

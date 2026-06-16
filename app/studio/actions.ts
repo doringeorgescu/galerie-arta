@@ -40,8 +40,9 @@ export async function createPainting(formData: FormData) {
   })
 
   revalidatePath('/')
-  revalidatePath('/admin/paintings')
-  redirect('/admin/paintings')
+  revalidatePath('/gallery')
+  revalidatePath('/studio/paintings')
+  redirect('/studio/paintings')
 }
 
 export async function updatePainting(id: string, formData: FormData) {
@@ -69,8 +70,9 @@ export async function updatePainting(id: string, formData: FormData) {
   })
 
   revalidatePath('/')
-  revalidatePath('/admin/paintings')
-  redirect('/admin/paintings')
+  revalidatePath('/gallery')
+  revalidatePath('/studio/paintings')
+  redirect('/studio/paintings')
 }
 
 export async function deletePainting(id: string) {
@@ -100,18 +102,19 @@ export async function deletePainting(id: string) {
   await prisma.painting.delete({ where: { id } })
 
   revalidatePath('/')
-  revalidatePath('/admin/paintings')
-  redirect('/admin/paintings')
+  revalidatePath('/gallery')
+  revalidatePath('/studio/paintings')
+  redirect('/studio/paintings')
 }
 
 export async function updateOrderStatus(id: string, status: 'PENDING' | 'PAID' | 'SHIPPED') {
   await requireAdmin()
   await prisma.order.update({ where: { id }, data: { status } })
-  revalidatePath('/admin/orders')
+  revalidatePath('/studio/orders')
 }
 
 export async function signOut() {
   const supabase = await createClient()
   await supabase.auth.signOut()
-  redirect('/admin/login')
+  redirect('/studio/login')
 }

@@ -16,7 +16,7 @@ export default async function PaintingsAdminPage() {
       <div className="flex items-center justify-between">
         <h1 className="font-serif text-3xl text-ink">Tablouri</h1>
         <Link
-          href="/admin/paintings/new"
+          href="/studio/paintings/new"
           className="bg-accent text-canvas rounded px-4 py-2 text-sm font-medium hover:bg-accent-light transition-colors"
         >
           + Lucrare nouă
@@ -42,7 +42,7 @@ export default async function PaintingsAdminPage() {
               <div className="flex items-center gap-4 shrink-0">
                 <Badge status={painting.status} />
                 <Link
-                  href={`/admin/paintings/${painting.id}`}
+                  href={`/studio/paintings/${painting.id}`}
                   className="text-xs text-muted hover:text-ink transition-colors"
                 >
                   Editează

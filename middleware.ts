@@ -2,8 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  const isAdminPath = request.nextUrl.pathname.startsWith('/admin')
-  const isLoginPath = request.nextUrl.pathname === '/admin/login'
+  const isAdminPath = request.nextUrl.pathname.startsWith('/studio')
+  const isLoginPath = request.nextUrl.pathname === '/studio/login'
 
   // Use private vars (no NEXT_PUBLIC_ prefix) so they're read at runtime,
   // not inlined as empty strings during local prebuilt compilation.
@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
   if (!supabaseUrl || !supabaseAnonKey) {
     if (isAdminPath && !isLoginPath) {
       const loginUrl = request.nextUrl.clone()
-      loginUrl.pathname = '/admin/login'
+      loginUrl.pathname = '/studio/login'
       return NextResponse.redirect(loginUrl)
     }
     return NextResponse.next()
@@ -53,13 +53,13 @@ export async function middleware(request: NextRequest) {
 
   if (isAdminPath && !isLoginPath && !user && !isServerAction) {
     const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = '/admin/login'
+    loginUrl.pathname = '/studio/login'
     return NextResponse.redirect(loginUrl)
   }
 
   if (isLoginPath && user) {
     const dashboardUrl = request.nextUrl.clone()
-    dashboardUrl.pathname = '/admin'
+    dashboardUrl.pathname = '/studio'
     return NextResponse.redirect(dashboardUrl)
   }
 
